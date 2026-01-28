@@ -7,12 +7,13 @@ datasource db {
 }
 
 model Account {
-  id        String   @id @default(cuid())
-  name      String
-  type      String   // checking, savings, investment, cash
-  balance   Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String              @id @default(cuid())
+  name         String
+  type         String // checking, savings, investment, cash
+  balance      Float
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  transactions FinancialMovement[]
 
   @@index([type])
   @@map("accounts")
@@ -35,10 +36,25 @@ model Bill {
   description String
   amount      Float
   dueDate     String
-  frequency   String   // once, weekly, monthly, yearly
+  frequency   String // once, weekly, monthly, yearly
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([frequency])
   @@map("bills")
+}
+
+model FinancialMovement {
+  id          String   @id @default(cuid())
+  description String
+  amount      Float
+  date        DateTime @default(now())
+  accountId   String
+  account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  type        String // INCOME or EXPENSE
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([accountId])
+  @@map("financial_movements")
 }

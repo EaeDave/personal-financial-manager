@@ -1,9 +1,9 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getAccountsFn } from '../functions'
 import type { Account } from '../types'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export function AccountsList() {
   const { data: accounts } = useSuspenseQuery({
@@ -67,22 +67,29 @@ export function AccountsList() {
 
         <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
           {accounts.map((account: Account) => (
-            <Card key={account.id}>
-              <CardHeader>
-                <div className='flex items-start justify-between'>
-                  <div className='space-y-1'>
-                    <CardTitle className='text-lg'>{account.name}</CardTitle>
-                    <CardDescription>{formatAccountType(account.type)}</CardDescription>
+            <Link
+              key={account.id}
+              to='/accounts/$accountId'
+              params={{ accountId: account.id }}
+              className='block hover:no-underline'
+            >
+              <Card className='hover:bg-slate-50 transition-colors cursor-pointer h-full'>
+                <CardHeader>
+                  <div className='flex items-start justify-between'>
+                    <div className='space-y-1'>
+                      <CardTitle className='text-lg'>{account.name}</CardTitle>
+                      <CardDescription>{formatAccountType(account.type)}</CardDescription>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className='space-y-2'>
-                  <div className='text-2xl font-bold tabular-nums'>{formatCurrency(account.balance)}</div>
-                  <div className='text-xs text-muted-foreground'>Created {formatDate(account.createdAt)}</div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardHeader>
+                <CardContent>
+                  <div className='space-y-2'>
+                    <div className='text-2xl font-bold tabular-nums'>{formatCurrency(account.balance)}</div>
+                    <div className='text-xs text-muted-foreground'>Created {formatDate(account.createdAt)}</div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>
