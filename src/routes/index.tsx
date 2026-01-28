@@ -8,6 +8,15 @@ function App() {
     <div className='p-8 max-w-4xl mx-auto'>
       <h1 className='text-3xl font-bold mb-6'>Financial Manager</h1>
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+        <Link to='/accounts' className='block hover:no-underline'>
+          <Card className='h-full hover:bg-slate-50 transition-colors'>
+            <CardHeader>
+              <CardTitle>View Accounts</CardTitle>
+              <CardDescription>See all your accounts and balances.</CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
+
         <Link to='/accounts/new' className='block hover:no-underline'>
           <Card className='h-full hover:bg-slate-50 transition-colors'>
             <CardHeader>

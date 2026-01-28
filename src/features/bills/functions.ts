@@ -1,23 +1,29 @@
 import { createServerFn } from '@tanstack/react-start'
-import { CreateBillDTO, Bill } from './types'
-
-// Mock DB
-const bills: Bill[] = []
+import { prisma } from '@/lib/db'
+import type { Bill, CreateBillDTO } from './types'
 
 export const createBillFn = createServerFn({ method: 'POST' }).handler(async ({ data }: { data: any }) => {
   const payload = data as CreateBillDTO
   console.log('Creating bill:', payload)
 
-  // Simulate DB delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
+  const bill = await prisma.bill.create({
+    data: {
+      description: payload.description,
+      amount: payload.amount,
+      dueDate: payload.dueDate,
+      frequency: payload.frequency,
+    },
+  })
 
-  const newBill: Bill = {
-    ...payload,
-    id: Math.random().toString(36).substring(7),
-    createdAt: new Date().toISOString(),
-  }
+  return bill as Bill
+})
 
-  bills.push(newBill)
+export const getBillsFn = createServerFn({ method: 'GET' }).handler(async () => {
+  console.log('Fetching bills')
 
-  return newBill
+  const bills = await prisma.bill.findMany({
+    orderBy: { createdAt: 'desc' },
+  })
+
+  return bills as Array<Bill>
 })

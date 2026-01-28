@@ -7,5 +7,6 @@ export interface CreateCreditCardDTO {
 
 export interface CreditCard extends CreateCreditCardDTO {
   id: string
-  createdAt: string
+  createdAt: Date
+  updatedAt: Date
 }

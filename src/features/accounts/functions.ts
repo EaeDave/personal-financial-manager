@@ -1,23 +1,28 @@
 import { createServerFn } from '@tanstack/react-start'
-import { CreateAccountDTO, Account } from './types'
-
-// Mock DB
-const accounts: Account[] = []
+import { prisma } from '@/lib/db'
+import type { Account, CreateAccountDTO } from './types'
 
 export const createAccountFn = createServerFn({ method: 'POST' }).handler(async ({ data }: { data: any }) => {
   const payload = data as CreateAccountDTO
   console.log('Creating account:', payload)
 
-  // Simulate DB delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
+  const account = await prisma.account.create({
+    data: {
+      name: payload.name,
+      type: payload.type,
+      balance: payload.balance,
+    },
+  })
 
-  const newAccount: Account = {
-    ...payload,
-    id: Math.random().toString(36).substring(7),
-    createdAt: new Date().toISOString(),
-  }
+  return account as Account
+})
 
-  accounts.push(newAccount)
+export const getAccountsFn = createServerFn({ method: 'GET' }).handler(async () => {
+  console.log('Fetching accounts')
 
-  return newAccount
+  const accounts = await prisma.account.findMany({
+    orderBy: { createdAt: 'desc' },
+  })
+
+  return accounts as Array<Account>
 })

@@ -8,5 +8,6 @@ export interface CreateAccountDTO {
 
 export interface Account extends CreateAccountDTO {
   id: string
-  createdAt: string
+  createdAt: Date
+  updatedAt: Date
 }

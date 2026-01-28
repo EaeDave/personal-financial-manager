@@ -1,23 +1,29 @@
 import { createServerFn } from '@tanstack/react-start'
-import { CreateCreditCardDTO, CreditCard } from './types'
-
-// Mock DB
-const cards: CreditCard[] = []
+import { prisma } from '@/lib/db'
+import type { CreditCard, CreateCreditCardDTO } from './types'
 
 export const createCreditCardFn = createServerFn({ method: 'POST' }).handler(async ({ data }: { data: any }) => {
   const payload = data as CreateCreditCardDTO
   console.log('Creating credit card:', payload)
 
-  // Simulate DB delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
+  const card = await prisma.creditCard.create({
+    data: {
+      name: payload.name,
+      limit: payload.limit,
+      closingDay: payload.closingDay,
+      dueDay: payload.dueDay,
+    },
+  })
 
-  const newCard: CreditCard = {
-    ...payload,
-    id: Math.random().toString(36).substring(7),
-    createdAt: new Date().toISOString(),
-  }
+  return card as CreditCard
+})
 
-  cards.push(newCard)
+export const getCreditCardsFn = createServerFn({ method: 'GET' }).handler(async () => {
+  console.log('Fetching credit cards')
 
-  return newCard
+  const cards = await prisma.creditCard.findMany({
+    orderBy: { createdAt: 'desc' },
+  })
+
+  return cards as Array<CreditCard>
 })

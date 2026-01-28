@@ -11,3 +11,9 @@ count.txt
 .output
 .vinxi
 todos.json
+
+/generated/prisma
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal

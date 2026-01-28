@@ -9,5 +9,6 @@ export interface CreateBillDTO {
 
 export interface Bill extends CreateBillDTO {
   id: string
-  createdAt: string
+  createdAt: Date
+  updatedAt: Date
 }
