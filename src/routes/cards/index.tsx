@@ -1,14 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AccountsList } from '@/features/accounts/components/AccountsList'
 import { BackButton } from '@/components/ui/back-button'
+import { CreditCardsList } from '@/features/credit-cards/components/CreditCardsList'
 
-export const Route = createFileRoute('/accounts/')({
-  component: AccountsPage,
+export const Route = createFileRoute('/cards/')({
+  component: CreditCardsPage,
 })
 
-function AccountsPage() {
+function CreditCardsPage() {
   const { t } = useTranslation()
   return (
     <div className='container mx-auto py-8 px-4'>
@@ -20,7 +20,7 @@ function AccountsPage() {
           </div>
         }
       >
-        <AccountsList />
+        <CreditCardsList />
       </Suspense>
     </div>
   )

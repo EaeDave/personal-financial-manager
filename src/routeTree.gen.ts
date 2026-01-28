@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
+import { Route as CardsIndexRouteImport } from './routes/cards/index'
 import { Route as AccountsIndexRouteImport } from './routes/accounts/index'
 import { Route as TransactionsNewRouteImport } from './routes/transactions/new'
 import { Route as CardsNewRouteImport } from './routes/cards/new'
@@ -20,6 +22,16 @@ import { Route as AccountsAccountIdRouteImport } from './routes/accounts/$accoun
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CardsIndexRoute = CardsIndexRouteImport.update({
+  id: '/cards/',
+  path: '/cards/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountsIndexRoute = AccountsIndexRouteImport.update({
@@ -61,6 +73,8 @@ export interface FileRoutesByFullPath {
   '/cards/new': typeof CardsNewRoute
   '/transactions/new': typeof TransactionsNewRoute
   '/accounts/': typeof AccountsIndexRoute
+  '/cards/': typeof CardsIndexRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +84,8 @@ export interface FileRoutesByTo {
   '/cards/new': typeof CardsNewRoute
   '/transactions/new': typeof TransactionsNewRoute
   '/accounts': typeof AccountsIndexRoute
+  '/cards': typeof CardsIndexRoute
+  '/settings': typeof SettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,6 +96,8 @@ export interface FileRoutesById {
   '/cards/new': typeof CardsNewRoute
   '/transactions/new': typeof TransactionsNewRoute
   '/accounts/': typeof AccountsIndexRoute
+  '/cards/': typeof CardsIndexRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +109,8 @@ export interface FileRouteTypes {
     | '/cards/new'
     | '/transactions/new'
     | '/accounts/'
+    | '/cards/'
+    | '/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +120,8 @@ export interface FileRouteTypes {
     | '/cards/new'
     | '/transactions/new'
     | '/accounts'
+    | '/cards'
+    | '/settings'
   id:
     | '__root__'
     | '/'
@@ -109,6 +131,8 @@ export interface FileRouteTypes {
     | '/cards/new'
     | '/transactions/new'
     | '/accounts/'
+    | '/cards/'
+    | '/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -119,6 +143,8 @@ export interface RootRouteChildren {
   CardsNewRoute: typeof CardsNewRoute
   TransactionsNewRoute: typeof TransactionsNewRoute
   AccountsIndexRoute: typeof AccountsIndexRoute
+  CardsIndexRoute: typeof CardsIndexRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -128,6 +154,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cards/': {
+      id: '/cards/'
+      path: '/cards'
+      fullPath: '/cards/'
+      preLoaderRoute: typeof CardsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/accounts/': {
@@ -183,6 +223,8 @@ const rootRouteChildren: RootRouteChildren = {
   CardsNewRoute: CardsNewRoute,
   TransactionsNewRoute: TransactionsNewRoute,
   AccountsIndexRoute: AccountsIndexRoute,
+  CardsIndexRoute: CardsIndexRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

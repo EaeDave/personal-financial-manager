@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { useMutation } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { createCreditCardFn } from '../functions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -7,6 +9,8 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
 export function AddCreditCardForm() {
+  const navigate = useNavigate()
+  const { t } = useTranslation()
   const [name, setName] = useState('')
   const [limit, setLimit] = useState('')
   const [closingDay, setClosingDay] = useState('')
@@ -21,18 +25,14 @@ export function AddCreditCardForm() {
           closingDay: Number(closingDay) || 1,
           dueDay: Number(dueDay) || 10,
         },
-      })
+      } as any)
     },
-    onSuccess: (data) => {
-      alert(`Card created: ${data.name}`)
-      setName('')
-      setLimit('')
-      setClosingDay('')
-      setDueDay('')
+    onSuccess: () => {
+      navigate({ to: '/cards' })
     },
     onError: (error) => {
       console.error(error)
-      alert('Failed to create card')
+      alert(t('common.error'))
     },
   })
 
@@ -44,14 +44,14 @@ export function AddCreditCardForm() {
   return (
     <Card className='w-[350px]'>
       <CardHeader>
-        <CardTitle>Add Credit Card</CardTitle>
-        <CardDescription>Enter card details.</CardDescription>
+        <CardTitle>{t('cards.addCard')}</CardTitle>
+        <CardDescription>{t('cards.desc', 'Enter card details.')}</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent>
           <div className='grid w-full items-center gap-4'>
             <div className='flex flex-col space-y-1.5'>
-              <Label htmlFor='cardName'>Name</Label>
+              <Label htmlFor='cardName'>{t('accounts.form.name', 'Name')}</Label>
               <Input
                 id='cardName'
                 placeholder='e.g. Visa Platinum'
@@ -61,7 +61,7 @@ export function AddCreditCardForm() {
               />
             </div>
             <div className='flex flex-col space-y-1.5'>
-              <Label htmlFor='limit'>Limit</Label>
+              <Label htmlFor='limit'>{t('cards.limit')}</Label>
               <Input
                 id='limit'
                 type='number'
@@ -73,7 +73,7 @@ export function AddCreditCardForm() {
             </div>
             <div className='grid grid-cols-2 gap-4'>
               <div className='flex flex-col space-y-1.5'>
-                <Label htmlFor='closingDay'>Closing Day</Label>
+                <Label htmlFor='closingDay'>{t('cards.closing')}</Label>
                 <Input
                   id='closingDay'
                   type='number'
@@ -84,7 +84,7 @@ export function AddCreditCardForm() {
                 />
               </div>
               <div className='flex flex-col space-y-1.5'>
-                <Label htmlFor='dueDay'>Due Day</Label>
+                <Label htmlFor='dueDay'>{t('cards.dueDate')}</Label>
                 <Input
                   id='dueDay'
                   type='number'
@@ -102,14 +102,13 @@ export function AddCreditCardForm() {
             variant='outline'
             type='button'
             onClick={() => {
-              setName('')
-              setLimit('')
+              navigate({ to: '/cards' })
             }}
           >
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button type='submit' disabled={mutation.isPending}>
-            {mutation.isPending ? 'Creating...' : 'Create'}
+            {mutation.isPending ? t('common.processing') : t('common.create')}
           </Button>
         </CardFooter>
       </form>

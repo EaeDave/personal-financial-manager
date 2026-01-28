@@ -2,10 +2,11 @@ import { HeadContent, Scripts, createRootRouteWithContext, useRouter } from '@ta
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { QueryClientProvider } from '@tanstack/react-query'
-import type { QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-
+import '../lib/i18n' // Initialize i18n
+import { SettingsProvider } from '../lib/settings-context'
 import appCss from '../styles.css?url'
+import type { QueryClient } from '@tanstack/react-query'
 
 export interface RouterContext {
   queryClient: QueryClient
@@ -22,7 +23,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Financial Manager',
       },
     ],
     links: [
@@ -38,7 +39,6 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const router = useRouter()
-  // @ts-expect-error context type inference might be tricky here without full declaration
   const queryClient = router.options.context.queryClient
 
   return (
@@ -48,19 +48,21 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <QueryClientProvider client={queryClient}>
-          {children}
-          <ReactQueryDevtools buttonPosition='bottom-left' />
-          <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
-            plugins={[
-              {
-                name: 'Tanstack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-            ]}
-          />
+          <SettingsProvider>
+            {children}
+            <ReactQueryDevtools buttonPosition='bottom-left' />
+            <TanStackDevtools
+              config={{
+                position: 'bottom-right',
+              }}
+              plugins={[
+                {
+                  name: 'Tanstack Router',
+                  render: <TanStackRouterDevtoolsPanel />,
+                },
+              ]}
+            />
+          </SettingsProvider>
         </QueryClientProvider>
         <Scripts />
       </body>

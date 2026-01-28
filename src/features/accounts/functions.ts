@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
-import { prisma } from '@/lib/db'
 import type { Account, CreateAccountDTO } from './types'
+import { prisma } from '@/lib/db'
 
 export const createAccountFn = createServerFn({ method: 'POST' }).handler(async ({ data }: { data: any }) => {
   const payload = data as CreateAccountDTO

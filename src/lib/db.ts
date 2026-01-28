@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { PrismaLibSql } from '@prisma/adapter-libsql'
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient }
+const globalForPrisma = global as unknown as { prisma?: PrismaClient }
 
 // Create Prisma adapter with libSQL
 const adapter = new PrismaLibSql({

@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
+import type { CreateCreditCardDTO, CreditCard } from './types'
 import { prisma } from '@/lib/db'
-import type { CreditCard, CreateCreditCardDTO } from './types'
 
 export const createCreditCardFn = createServerFn({ method: 'POST' }).handler(async ({ data }: { data: any }) => {
   const payload = data as CreateCreditCardDTO

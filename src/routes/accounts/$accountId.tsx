@@ -2,9 +2,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Suspense } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getAccountsFn } from '@/features/accounts/functions'
 import { getTransactionsByAccountFn } from '@/features/transactions/functions'
+
+import { BackButton } from '@/components/ui/back-button'
+import { useSettings } from '@/lib/settings-context'
 
 export const Route = createFileRoute('/accounts/$accountId')({
   component: AccountDetailPage,
@@ -12,14 +16,16 @@ export const Route = createFileRoute('/accounts/$accountId')({
 
 function AccountDetailPage() {
   const { accountId } = Route.useParams()
+  const { t } = useTranslation()
 
   return (
     <div className='p-8 max-w-4xl mx-auto space-y-8'>
-      <Suspense fallback={<div>Loading account details...</div>}>
+      <BackButton to='/accounts' label={t('accounts.title')} />
+      <Suspense fallback={<div>{t('common.loading')}</div>}>
         <AccountDetails accountId={accountId} />
       </Suspense>
 
-      <Suspense fallback={<div>Loading transactions...</div>}>
+      <Suspense fallback={<div>{t('common.loading')}</div>}>
         <TransactionHistory accountId={accountId} />
       </Suspense>
     </div>
@@ -31,17 +37,11 @@ function AccountDetails({ accountId }: { accountId: string }) {
     queryKey: ['accounts'],
     queryFn: () => getAccountsFn(),
   })
+  const { formatCurrency } = useSettings()
 
   const account = accounts.find((a) => a.id === accountId)
 
   if (!account) return <div>Account not found.</div>
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount)
-  }
 
   return (
     <Card className='border-2'>
@@ -57,23 +57,20 @@ function AccountDetails({ accountId }: { accountId: string }) {
 }
 
 function TransactionHistory({ accountId }: { accountId: string }) {
+  const { t, i18n } = useTranslation()
   const { data: transactions } = useSuspenseQuery({
     queryKey: ['transactions', accountId],
-    queryFn: () => getTransactionsByAccountFn({ data: { accountId } }),
+    queryFn: () => (getTransactionsByAccountFn as any)({ data: { accountId } }),
   })
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount)
-  }
+  const { formatCurrency } = useSettings()
 
   const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    return new Date(date).toLocaleString(i18n.language, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     })
   }
 
@@ -81,18 +78,22 @@ function TransactionHistory({ accountId }: { accountId: string }) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Transactions</CardTitle>
-          <CardDescription>No transactions found for this account.</CardDescription>
+          <CardTitle>{t('transactions.history')}</CardTitle>
+          <CardDescription>{t('transactions.noTransactions')}</CardDescription>
         </CardHeader>
       </Card>
     )
   }
 
+  // Helper to translate description if it matches a known key (optional, but good for "Balance adjustment")
+  // For now, we assume descriptions are user-generated or generic.
+  // If "Balance adjustment" is coming from backend, we might want to translate it or let it be.
+
   return (
     <div className='space-y-4'>
-      <h2 className='text-2xl font-bold'>Transaction History</h2>
+      <h2 className='text-2xl font-bold'>{t('transactions.history')}</h2>
       <div className='space-y-2'>
-        {transactions.map((tx) => (
+        {transactions.map((tx: any) => (
           <Card key={tx.id}>
             <CardContent className='p-4 flex items-center justify-between'>
               <div className='flex items-center gap-4'>

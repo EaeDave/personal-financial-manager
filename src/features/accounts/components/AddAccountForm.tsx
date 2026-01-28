@@ -1,14 +1,18 @@
 import { useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { useMutation } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { createAccountFn } from '../functions'
+import type { AccountType } from '../types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { AccountType } from '../types'
 
 export function AddAccountForm() {
+  const navigate = useNavigate()
+  const { t } = useTranslation()
   const [name, setName] = useState('')
   const [type, setType] = useState<AccountType>('checking')
   const [balance, setBalance] = useState('')
@@ -22,16 +26,14 @@ export function AddAccountForm() {
           type,
           balance: Number(balance) || 0,
         },
-      })
+      } as any)
     },
-    onSuccess: (data) => {
-      alert(`Account created: ${data.name}`)
-      setName('')
-      setBalance('')
+    onSuccess: () => {
+      navigate({ to: '/accounts' })
     },
     onError: (error) => {
       console.error(error)
-      alert('Failed to create account')
+      alert(t('common.error'))
     },
   })
 
@@ -43,14 +45,14 @@ export function AddAccountForm() {
   return (
     <Card className='w-[350px]'>
       <CardHeader>
-        <CardTitle>Add New Account</CardTitle>
-        <CardDescription>Enter account details below.</CardDescription>
+        <CardTitle>{t('accounts.addAccount')}</CardTitle>
+        <CardDescription>{t('accounts.desc', 'Enter account details below.')}</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent>
           <div className='grid w-full items-center gap-4'>
             <div className='flex flex-col space-y-1.5'>
-              <Label htmlFor='name'>Name</Label>
+              <Label htmlFor='name'>{t('accounts.form.name', 'Name')}</Label>
               <Input
                 id='name'
                 placeholder='e.g. Main Checking'
@@ -60,21 +62,21 @@ export function AddAccountForm() {
               />
             </div>
             <div className='flex flex-col space-y-1.5'>
-              <Label htmlFor='type'>Type</Label>
+              <Label htmlFor='type'>{t('accounts.form.type', 'Type')}</Label>
               <Select value={type} onValueChange={(val: AccountType) => setType(val)}>
                 <SelectTrigger id='type'>
                   <SelectValue placeholder='Select' />
                 </SelectTrigger>
                 <SelectContent position='popper'>
-                  <SelectItem value='checking'>Checking</SelectItem>
-                  <SelectItem value='savings'>Savings</SelectItem>
-                  <SelectItem value='investment'>Investment</SelectItem>
-                  <SelectItem value='cash'>Cash</SelectItem>
+                  <SelectItem value='checking'>{t('accounts.types.checking')}</SelectItem>
+                  <SelectItem value='savings'>{t('accounts.types.savings')}</SelectItem>
+                  <SelectItem value='investment'>{t('accounts.types.investment')}</SelectItem>
+                  <SelectItem value='cash'>{t('accounts.types.cash')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className='flex flex-col space-y-1.5'>
-              <Label htmlFor='balance'>Initial Balance</Label>
+              <Label htmlFor='balance'>{t('accounts.form.initialBalance', 'Initial Balance')}</Label>
               <Input
                 id='balance'
                 type='number'
@@ -91,14 +93,13 @@ export function AddAccountForm() {
             variant='outline'
             type='button'
             onClick={() => {
-              setName('')
-              setBalance('')
+              navigate({ to: '/accounts' })
             }}
           >
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button type='submit' disabled={mutation.isPending}>
-            {mutation.isPending ? 'Creating...' : 'Create'}
+            {mutation.isPending ? t('common.processing') : t('common.create')}
           </Button>
         </CardFooter>
       </form>

@@ -1,9 +1,9 @@
 import { createServerFn } from '@tanstack/react-start'
-import { prisma } from '@/lib/db'
 import type { Bill, CreateBillDTO } from './types'
+import { prisma } from '@/lib/db'
 
-export const createBillFn = createServerFn({ method: 'POST' }).handler(async ({ data }: { data: any }) => {
-  const payload = data as CreateBillDTO
+export const createBillFn = createServerFn({ method: 'POST' }).handler(async (ctx: any) => {
+  const payload = ctx.data as CreateBillDTO
   console.log('Creating bill:', payload)
 
   const bill = await prisma.bill.create({

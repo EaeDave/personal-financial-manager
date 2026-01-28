@@ -1,9 +1,9 @@
 import { createServerFn } from '@tanstack/react-start'
-import { prisma } from '@/lib/db'
 import type { CreateTransactionDTO, Transaction } from './types'
+import { prisma } from '@/lib/db'
 
-export const createTransactionFn = createServerFn({ method: 'POST' }).handler(async ({ data }: { data: any }) => {
-  const payload = data as CreateTransactionDTO
+export const createTransactionFn = createServerFn({ method: 'POST' }).handler(async (ctx: any) => {
+  const payload = ctx.data as CreateTransactionDTO
   console.log('Server: Creating transaction:', payload)
 
   try {
@@ -41,8 +41,8 @@ export const createTransactionFn = createServerFn({ method: 'POST' }).handler(as
   }
 })
 
-export const getTransactionsByAccountFn = createServerFn({ method: 'GET' }).handler(async ({ data }: { data: any }) => {
-  const { accountId } = data as { accountId: string }
+export const getTransactionsByAccountFn = createServerFn({ method: 'GET' }).handler(async (ctx: any) => {
+  const { accountId } = ctx.data as { accountId: string }
   const movements = await prisma.financialMovement.findMany({
     where: { accountId },
     orderBy: { date: 'desc' },
