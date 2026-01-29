@@ -18,6 +18,8 @@ import { Route as CardsNewRouteImport } from './routes/cards/new'
 import { Route as BillsNewRouteImport } from './routes/bills/new'
 import { Route as AccountsNewRouteImport } from './routes/accounts/new'
 import { Route as AccountsAccountIdRouteImport } from './routes/accounts/$accountId'
+import { Route as CardsCardIdIndexRouteImport } from './routes/cards/$cardId/index'
+import { Route as CardsCardIdTransactionsNewRouteImport } from './routes/cards/$cardId/transactions/new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -64,6 +66,17 @@ const AccountsAccountIdRoute = AccountsAccountIdRouteImport.update({
   path: '/accounts/$accountId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CardsCardIdIndexRoute = CardsCardIdIndexRouteImport.update({
+  id: '/cards/$cardId/',
+  path: '/cards/$cardId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CardsCardIdTransactionsNewRoute =
+  CardsCardIdTransactionsNewRouteImport.update({
+    id: '/cards/$cardId/transactions/new',
+    path: '/cards/$cardId/transactions/new',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -75,6 +88,8 @@ export interface FileRoutesByFullPath {
   '/accounts/': typeof AccountsIndexRoute
   '/cards/': typeof CardsIndexRoute
   '/settings/': typeof SettingsIndexRoute
+  '/cards/$cardId/': typeof CardsCardIdIndexRoute
+  '/cards/$cardId/transactions/new': typeof CardsCardIdTransactionsNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -86,6 +101,8 @@ export interface FileRoutesByTo {
   '/accounts': typeof AccountsIndexRoute
   '/cards': typeof CardsIndexRoute
   '/settings': typeof SettingsIndexRoute
+  '/cards/$cardId': typeof CardsCardIdIndexRoute
+  '/cards/$cardId/transactions/new': typeof CardsCardIdTransactionsNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -98,6 +115,8 @@ export interface FileRoutesById {
   '/accounts/': typeof AccountsIndexRoute
   '/cards/': typeof CardsIndexRoute
   '/settings/': typeof SettingsIndexRoute
+  '/cards/$cardId/': typeof CardsCardIdIndexRoute
+  '/cards/$cardId/transactions/new': typeof CardsCardIdTransactionsNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +130,8 @@ export interface FileRouteTypes {
     | '/accounts/'
     | '/cards/'
     | '/settings/'
+    | '/cards/$cardId/'
+    | '/cards/$cardId/transactions/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +143,8 @@ export interface FileRouteTypes {
     | '/accounts'
     | '/cards'
     | '/settings'
+    | '/cards/$cardId'
+    | '/cards/$cardId/transactions/new'
   id:
     | '__root__'
     | '/'
@@ -133,6 +156,8 @@ export interface FileRouteTypes {
     | '/accounts/'
     | '/cards/'
     | '/settings/'
+    | '/cards/$cardId/'
+    | '/cards/$cardId/transactions/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -145,6 +170,8 @@ export interface RootRouteChildren {
   AccountsIndexRoute: typeof AccountsIndexRoute
   CardsIndexRoute: typeof CardsIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
+  CardsCardIdIndexRoute: typeof CardsCardIdIndexRoute
+  CardsCardIdTransactionsNewRoute: typeof CardsCardIdTransactionsNewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,6 +239,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountsAccountIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cards/$cardId/': {
+      id: '/cards/$cardId/'
+      path: '/cards/$cardId'
+      fullPath: '/cards/$cardId/'
+      preLoaderRoute: typeof CardsCardIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cards/$cardId/transactions/new': {
+      id: '/cards/$cardId/transactions/new'
+      path: '/cards/$cardId/transactions/new'
+      fullPath: '/cards/$cardId/transactions/new'
+      preLoaderRoute: typeof CardsCardIdTransactionsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -225,6 +266,8 @@ const rootRouteChildren: RootRouteChildren = {
   AccountsIndexRoute: AccountsIndexRoute,
   CardsIndexRoute: CardsIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
+  CardsCardIdIndexRoute: CardsCardIdIndexRoute,
+  CardsCardIdTransactionsNewRoute: CardsCardIdTransactionsNewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

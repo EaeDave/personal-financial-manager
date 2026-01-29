@@ -4,7 +4,6 @@ import { prisma } from '@/lib/db'
 
 export const createBillFn = createServerFn({ method: 'POST' }).handler(async (ctx: any) => {
   const payload = ctx.data as CreateBillDTO
-  console.log('Creating bill:', payload)
 
   const bill = await prisma.bill.create({
     data: {
@@ -19,8 +18,6 @@ export const createBillFn = createServerFn({ method: 'POST' }).handler(async (ct
 })
 
 export const getBillsFn = createServerFn({ method: 'GET' }).handler(async () => {
-  console.log('Fetching bills')
-
   const bills = await prisma.bill.findMany({
     orderBy: { createdAt: 'desc' },
   })

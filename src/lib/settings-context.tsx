@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { ReactNode } from 'react'
 
 type Currency = 'USD' | 'BRL'
@@ -7,11 +8,13 @@ interface SettingsContextType {
   currency: Currency
   setCurrency: (currency: Currency) => void
   formatCurrency: (amount: number) => string
+  language: string
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined)
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
+  const { i18n } = useTranslation()
   const [currency, setCurrency] = useState<Currency>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('currency') as Currency | null
@@ -35,7 +38,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <SettingsContext.Provider value={{ currency, setCurrency: handleSetCurrency, formatCurrency }}>
+    <SettingsContext.Provider
+      value={{ currency, setCurrency: handleSetCurrency, formatCurrency, language: i18n.language }}
+    >
       {children}
     </SettingsContext.Provider>
   )

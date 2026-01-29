@@ -1,11 +1,12 @@
 import { Link } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { Calendar, CreditCard as CardIcon, Wallet } from 'lucide-react'
+import { Calendar, CreditCard as CardIcon, TrendingUp, Wallet } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { getCreditCardsFn } from '../functions'
 import type { CreditCard } from '../types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
 import { useSettings } from '@/lib/settings-context'
 
 export function CreditCardsList() {
@@ -40,44 +41,66 @@ export function CreditCardsList() {
       </div>
 
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
-        {cards.map((card: CreditCard) => (
-          <Card key={card.id} className='relative overflow-hidden group hover:shadow-md transition-shadow'>
-            <div className='absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity'>
-              <CardIcon size={64} />
-            </div>
-            <CardHeader>
-              <CardTitle className='text-xl'>{card.name}</CardTitle>
-              <CardDescription>{t('dashboard.viewCreditCards')}</CardDescription>
-            </CardHeader>
-            <CardContent className='space-y-4'>
-              <div className='space-y-1'>
-                <div className='text-xs text-muted-foreground uppercase flex items-center gap-1'>
-                  <Wallet size={12} /> {t('cards.limit')}
-                </div>
-                <div className='text-2xl font-bold tabular-nums text-primary'>{formatCurrency(card.limit)}</div>
-              </div>
+        {cards.map((card: CreditCard & { usedLimit: number }) => {
+          const usagePercent = Math.min((card.usedLimit / card.limit) * 100, 100)
+          const available = Math.max(card.limit - card.usedLimit, 0)
 
-              <div className='grid grid-cols-2 gap-4 pt-2 border-t'>
-                <div className='space-y-1'>
-                  <div className='text-[10px] text-muted-foreground uppercase flex items-center gap-1'>
-                    <Calendar size={10} /> {t('cards.closing')}
-                  </div>
-                  <div className='text-sm font-semibold'>
-                    {t('cards.day')} {card.closingDay}
-                  </div>
+          return (
+            <Link key={card.id} to='/cards/$cardId' params={{ cardId: card.id }} className='block'>
+              <Card className='relative overflow-hidden group hover:shadow-md transition-shadow cursor-pointer h-full'>
+                <div className='absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity'>
+                  <CardIcon size={64} />
                 </div>
-                <div className='space-y-1'>
-                  <div className='text-[10px] text-muted-foreground uppercase flex items-center gap-1'>
-                    <Calendar size={10} /> {t('cards.dueDate')}
+                <CardHeader>
+                  <CardTitle className='text-xl'>{card.name}</CardTitle>
+                  <CardDescription>{t('cards.clickToView')}</CardDescription>
+                </CardHeader>
+                <CardContent className='space-y-4'>
+                  {/* Used / Limit Display */}
+                  <div className='space-y-2'>
+                    <div className='flex justify-between text-xs text-muted-foreground uppercase'>
+                      <span className='flex items-center gap-1'>
+                        <TrendingUp size={12} /> {t('cards.used')}
+                      </span>
+                      <span className='flex items-center gap-1'>
+                        <Wallet size={12} /> {t('cards.limit')}
+                      </span>
+                    </div>
+                    <div className='flex justify-between text-lg font-bold tabular-nums'>
+                      <span className={usagePercent > 80 ? 'text-destructive' : 'text-foreground'}>
+                        {formatCurrency(card.usedLimit)}
+                      </span>
+                      <span className='text-primary'>{formatCurrency(card.limit)}</span>
+                    </div>
+                    <Progress value={usagePercent} className='h-2' />
+                    <div className='text-xs text-muted-foreground text-center'>
+                      {t('cards.available')}: <span className='font-semibold'>{formatCurrency(available)}</span>
+                    </div>
                   </div>
-                  <div className='text-sm font-semibold text-destructive'>
-                    {t('cards.day')} {card.dueDay}
+
+                  <div className='grid grid-cols-2 gap-4 pt-2 border-t'>
+                    <div className='space-y-1'>
+                      <div className='text-[10px] text-muted-foreground uppercase flex items-center gap-1'>
+                        <Calendar size={10} /> {t('cards.closing')}
+                      </div>
+                      <div className='text-sm font-semibold'>
+                        {t('cards.day')} {card.closingDay}
+                      </div>
+                    </div>
+                    <div className='space-y-1'>
+                      <div className='text-[10px] text-muted-foreground uppercase flex items-center gap-1'>
+                        <Calendar size={10} /> {t('cards.dueDate')}
+                      </div>
+                      <div className='text-sm font-semibold text-destructive'>
+                        {t('cards.day')} {card.dueDay}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                </CardContent>
+              </Card>
+            </Link>
+          )
+        })}
       </div>
     </div>
   )

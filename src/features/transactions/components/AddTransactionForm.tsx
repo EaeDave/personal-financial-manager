@@ -6,6 +6,7 @@ import { createTransactionFn } from '../functions'
 import type { CreateTransactionDTO, TransactionType } from '../types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { DatePicker } from '@/components/ui/date-picker'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -17,7 +18,7 @@ export function AddTransactionForm() {
   const queryClient = useQueryClient()
   const [loading, setLoading] = useState(false)
   const { t } = useTranslation()
-  const { formatCurrency } = useSettings()
+  const { formatCurrency, language } = useSettings()
 
   const { data: accounts } = useSuspenseQuery({
     queryKey: ['accounts'],
@@ -27,6 +28,7 @@ export function AddTransactionForm() {
   const [formData, setFormData] = useState<Partial<CreateTransactionDTO>>({
     type: 'EXPENSE',
     accountId: accounts[0]?.id || '',
+    date: new Date(),
   })
 
   const mutation = useMutation({
@@ -51,6 +53,7 @@ export function AddTransactionForm() {
         amount: Number(formData.amount),
         accountId: formData.accountId,
         type: formData.type,
+        date: formData.date,
       })
     } finally {
       setLoading(false)
@@ -124,6 +127,16 @@ export function AddTransactionForm() {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className='space-y-2'>
+            <Label>{t('transactions.form.date')}</Label>
+            <DatePicker
+              date={formData.date}
+              onDateChange={(date) => setFormData({ ...formData, date: date || new Date() })}
+              placeholder={t('transactions.form.selectDate')}
+              locale={language === 'pt' ? 'pt' : 'en'}
+            />
           </div>
 
           <Button type='submit' className='w-full' disabled={loading}>

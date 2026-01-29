@@ -4,7 +4,6 @@ import { prisma } from '@/lib/db'
 
 export const createAccountFn = createServerFn({ method: 'POST' }).handler(async ({ data }: { data: any }) => {
   const payload = data as CreateAccountDTO
-  console.log('Creating account:', payload)
 
   const account = await prisma.account.create({
     data: {
@@ -18,8 +17,6 @@ export const createAccountFn = createServerFn({ method: 'POST' }).handler(async 
 })
 
 export const getAccountsFn = createServerFn({ method: 'GET' }).handler(async () => {
-  console.log('Fetching accounts')
-
   const accounts = await prisma.account.findMany({
     orderBy: { createdAt: 'desc' },
   })

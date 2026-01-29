@@ -10,3 +10,5 @@ export interface CreditCard extends CreateCreditCardDTO {
   createdAt: Date
   updatedAt: Date
 }
+
+export * from './credit-card-transaction'

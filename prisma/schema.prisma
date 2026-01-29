@@ -20,15 +20,32 @@ model Account {
 }
 
 model CreditCard {
-  id         String   @id @default(cuid())
-  name       String
-  limit      Float
-  closingDay Int
-  dueDay     Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id           String                  @id @default(cuid())
+  name         String
+  limit        Float
+  closingDay   Int
+  dueDay       Int
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
+  transactions CreditCardTransaction[]
 
   @@map("credit_cards")
+}
+
+model CreditCardTransaction {
+  id                 String     @id @default(cuid())
+  description        String
+  amount             Float
+  date               DateTime   @default(now())
+  installments       Int        @default(1)
+  currentInstallment Int        @default(1)
+  creditCardId       String
+  creditCard         CreditCard @relation(fields: [creditCardId], references: [id], onDelete: Cascade)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  @@index([creditCardId])
+  @@map("credit_card_transactions")
 }
 
 model Bill {
