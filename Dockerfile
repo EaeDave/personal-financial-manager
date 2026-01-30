@@ -42,6 +42,7 @@ EXPOSE 3000
 
 # Copy the local database (WARNING: Data will be reset on every deploy)
 COPY dev.db ./
+ENV DATABASE_URL="file:./dev.db"
 
 # Start the application
 CMD ["bun", ".output/server/index.mjs"]
