@@ -1,0 +1,12 @@
+node_modules
+.output
+.agent
+.git
+.env
+dist
+.gitignore
+.prettierignore
+.cursorrules
+npm-debug.log
+yarn-error.log
+bun.lockb
