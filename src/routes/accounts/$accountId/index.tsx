@@ -1,16 +1,17 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { ArrowDownIcon, ArrowUpIcon, Plus } from 'lucide-react'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { Suspense } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getAccountsFn } from '@/features/accounts/functions'
 import { getTransactionsByAccountFn } from '@/features/transactions/functions'
-
+import { TransactionActions } from '@/features/transactions/components/TransactionActions'
 import { BackButton } from '@/components/ui/back-button'
+import { Button } from '@/components/ui/button'
 import { useSettings } from '@/lib/settings-context'
 
-export const Route = createFileRoute('/accounts/$accountId')({
+export const Route = createFileRoute('/accounts/$accountId/')({
   component: AccountDetailPage,
 })
 
@@ -38,6 +39,7 @@ function AccountDetails({ accountId }: { accountId: string }) {
     queryFn: () => getAccountsFn(),
   })
   const { formatCurrency } = useSettings()
+  const { t } = useTranslation()
 
   const account = accounts.find((a) => a.id === accountId)
 
@@ -46,8 +48,18 @@ function AccountDetails({ accountId }: { accountId: string }) {
   return (
     <Card className='border-2'>
       <CardHeader>
-        <CardDescription>{account.type.toUpperCase()}</CardDescription>
-        <CardTitle className='text-3xl font-bold'>{account.name}</CardTitle>
+        <div className='flex items-center justify-between'>
+          <div>
+            <CardDescription>{account.type.toUpperCase()}</CardDescription>
+            <CardTitle className='text-3xl font-bold'>{account.name}</CardTitle>
+          </div>
+          <Button asChild>
+            <Link to='/accounts/$accountId/transactions/new' params={{ accountId }}>
+              <Plus size={16} />
+              {t('dashboard.newTransaction')}
+            </Link>
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className='text-4xl font-bold tabular-nums'>{formatCurrency(account.balance)}</div>
@@ -81,13 +93,17 @@ function TransactionHistory({ accountId }: { accountId: string }) {
           <CardTitle>{t('transactions.history')}</CardTitle>
           <CardDescription>{t('transactions.noTransactions')}</CardDescription>
         </CardHeader>
+        <CardContent>
+          <Button asChild variant='outline'>
+            <Link to='/accounts/$accountId/transactions/new' params={{ accountId }}>
+              <Plus size={16} />
+              {t('dashboard.newTransaction')}
+            </Link>
+          </Button>
+        </CardContent>
       </Card>
     )
   }
-
-  // Helper to translate description if it matches a known key (optional, but good for "Balance adjustment")
-  // For now, we assume descriptions are user-generated or generic.
-  // If "Balance adjustment" is coming from backend, we might want to translate it or let it be.
 
   return (
     <div className='space-y-4'>
@@ -98,7 +114,7 @@ function TransactionHistory({ accountId }: { accountId: string }) {
             <CardContent className='p-4 flex items-center justify-between'>
               <div className='flex items-center gap-4'>
                 <div
-                  className={`p-2 rounded-full ${tx.type === 'INCOME' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}
+                  className={`p-2 rounded-full ${tx.type === `INCOME` ? `bg-green-100 text-green-600` : `bg-red-100 text-red-600`}`}
                 >
                   {tx.type === 'INCOME' ? <ArrowUpIcon size={20} /> : <ArrowDownIcon size={20} />}
                 </div>
@@ -107,11 +123,14 @@ function TransactionHistory({ accountId }: { accountId: string }) {
                   <div className='text-sm text-muted-foreground'>{formatDate(tx.date)}</div>
                 </div>
               </div>
-              <div
-                className={`text-lg font-bold tabular-nums ${tx.type === 'INCOME' ? 'text-green-600' : 'text-red-600'}`}
-              >
-                {tx.type === 'INCOME' ? '+' : '-'}
-                {formatCurrency(tx.amount)}
+              <div className='flex items-center gap-2'>
+                <div
+                  className={`text-lg font-bold tabular-nums ${tx.type === `INCOME` ? `text-green-600` : `text-red-600`}`}
+                >
+                  {tx.type === 'INCOME' ? '+' : '-'}
+                  {formatCurrency(tx.amount)}
+                </div>
+                <TransactionActions transaction={tx} accountId={accountId} />
               </div>
             </CardContent>
           </Card>

@@ -1,5 +1,11 @@
 import { createServerFn } from '@tanstack/react-start'
-import type { CreateCreditCardDTO, CreateCreditCardTransactionDTO, CreditCard, CreditCardTransaction } from './types'
+import type {
+  CreateCreditCardDTO,
+  CreateCreditCardTransactionDTO,
+  CreditCard,
+  CreditCardTransaction,
+  UpdateCreditCardTransactionDTO,
+} from './types'
 import { prisma } from '@/lib/db'
 
 export const createCreditCardFn = createServerFn({ method: 'POST' }).handler(async ({ data }: { data: any }) => {
@@ -77,4 +83,30 @@ export const getCreditCardTransactionsFn = createServerFn({ method: 'GET' }).han
   })
 
   return transactions as unknown as Array<CreditCardTransaction>
+})
+
+export const deleteCreditCardTransactionFn = createServerFn({ method: 'POST' }).handler(async (ctx: any) => {
+  const { transactionId } = ctx.data as { transactionId: string }
+
+  await prisma.creditCardTransaction.delete({
+    where: { id: transactionId },
+  })
+
+  return { success: true }
+})
+
+export const updateCreditCardTransactionFn = createServerFn({ method: 'POST' }).handler(async (ctx: any) => {
+  const payload = ctx.data as UpdateCreditCardTransactionDTO
+
+  const transaction = await prisma.creditCardTransaction.update({
+    where: { id: payload.id },
+    data: {
+      description: payload.description,
+      amount: payload.amount,
+      date: payload.date ? new Date(payload.date) : undefined,
+      installments: payload.installments,
+    },
+  })
+
+  return transaction as unknown as CreditCardTransaction
 })

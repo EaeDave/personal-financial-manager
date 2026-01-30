@@ -6,6 +6,14 @@ export interface CreateCreditCardTransactionDTO {
   installments?: number
 }
 
+export interface UpdateCreditCardTransactionDTO {
+  id: string
+  description: string
+  amount: number
+  date?: Date
+  installments?: number
+}
+
 export interface CreditCardTransaction extends CreateCreditCardTransactionDTO {
   id: string
   date: Date

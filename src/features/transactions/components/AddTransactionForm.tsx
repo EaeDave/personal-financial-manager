@@ -13,7 +13,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { getAccountsFn } from '@/features/accounts/functions'
 import { useSettings } from '@/lib/settings-context'
 
-export function AddTransactionForm() {
+interface AddTransactionFormProps {
+  accountId?: string
+}
+
+export function AddTransactionForm({ accountId }: AddTransactionFormProps) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [loading, setLoading] = useState(false)
@@ -27,7 +31,7 @@ export function AddTransactionForm() {
 
   const [formData, setFormData] = useState<Partial<CreateTransactionDTO>>({
     type: 'EXPENSE',
-    accountId: accounts[0]?.id || '',
+    accountId: accountId || accounts[0]?.id || '',
     date: new Date(),
   })
 
@@ -36,7 +40,11 @@ export function AddTransactionForm() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] })
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
-      navigate({ to: '/accounts' })
+      if (accountId) {
+        navigate({ to: '/accounts/$accountId', params: { accountId } })
+      } else {
+        navigate({ to: '/accounts' })
+      }
     },
   })
 
@@ -115,6 +123,7 @@ export function AddTransactionForm() {
             <Select
               value={formData.accountId}
               onValueChange={(value) => setFormData({ ...formData, accountId: value })}
+              disabled={!!accountId}
             >
               <SelectTrigger id='account'>
                 <SelectValue placeholder={t('transactions.form.selectAccount')} />

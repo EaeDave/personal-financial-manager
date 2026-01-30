@@ -3,6 +3,7 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { Calendar, CreditCard as CardIcon, Plus, TrendingUp, Wallet } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { getCreditCardByIdFn } from '../functions'
+import { CreditCardTransactionActions } from './CreditCardTransactionActions'
 import type { CreditCardTransaction } from '../types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -138,8 +139,11 @@ export function CreditCardDetail({ cardId }: CreditCardDetailProps) {
                         )}
                       </div>
                     </div>
-                    <div className='text-lg font-bold tabular-nums text-destructive'>
-                      -{formatCurrency(transaction.amount)}
+                    <div className='flex items-center gap-2'>
+                      <div className='text-lg font-bold tabular-nums text-destructive'>
+                        -{formatCurrency(transaction.amount)}
+                      </div>
+                      <CreditCardTransactionActions transaction={transaction} cardId={cardId} />
                     </div>
                   </div>
                 </CardContent>

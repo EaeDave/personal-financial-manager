@@ -8,6 +8,14 @@ export interface CreateTransactionDTO {
   date?: Date
 }
 
+export interface UpdateTransactionDTO {
+  id: string
+  description: string
+  amount: number
+  type: TransactionType
+  date?: Date
+}
+
 export interface Transaction extends CreateTransactionDTO {
   id: string
   date: Date
