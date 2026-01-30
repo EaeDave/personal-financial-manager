@@ -40,9 +40,8 @@ COPY --from=builder /app/.output ./.output
 # Expose the port the app runs on
 EXPOSE 3000
 
-# Copy the local database (WARNING: Data will be reset on every deploy)
-COPY dev.db ./
-ENV DATABASE_URL="file:./dev.db"
+# Expose the port the app runs on
+EXPOSE 3000
 
 # Start the application
 CMD ["bun", ".output/server/index.mjs"]
