@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useSettings } from '@/lib/settings-context'
 import { BackButton } from '@/components/ui/back-button'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export const Route = createFileRoute('/settings/')({
   component: SettingsPage,
@@ -24,6 +25,19 @@ function SettingsPage() {
       <h1 className='text-3xl font-bold mb-8'>{t('settings.title')}</h1>
 
       <div className='space-y-6'>
+        {/* Appearance Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('settings.appearance')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className='flex items-center justify-between'>
+              <span>{t('settings.theme')}</span>
+              <ThemeToggle />
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Language Settings */}
         <Card>
           <CardHeader>

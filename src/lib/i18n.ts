@@ -62,6 +62,8 @@ const resources = {
         currencyFormat: 'Currency Format',
         portuguese: 'Português (Brasil)',
         english: 'English',
+        appearance: 'Appearance',
+        theme: 'Theme',
       },
       accounts: {
         title: 'Accounts',
@@ -206,6 +208,8 @@ const resources = {
         currencyFormat: 'Formato de Moeda',
         portuguese: 'Português (Brasil)',
         english: 'English',
+        appearance: 'Aparência',
+        theme: 'Tema',
       },
       accounts: {
         title: 'Contas',
