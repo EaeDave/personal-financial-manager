@@ -17,6 +17,7 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { CategorySelect } from '@/features/categories/components/CategorySelect'
 import { useSettings } from '@/lib/settings-context'
 
 interface CreditCardTransactionActionsProps {
@@ -36,6 +37,7 @@ export function CreditCardTransactionActions({ transaction, cardId }: CreditCard
     amount: transaction.amount,
     date: new Date(transaction.date),
     installments: transaction.installments,
+    categoryId: transaction.categoryId,
   })
 
   const deleteMutation = useMutation({
@@ -125,6 +127,13 @@ export function CreditCardTransactionActions({ transaction, cardId }: CreditCard
                 date={editForm.date}
                 onDateChange={(date) => setEditForm({ ...editForm, date: date || new Date() })}
                 locale={language === 'pt' ? 'pt' : 'en'}
+              />
+            </div>
+            <div className='space-y-2'>
+              <Label>{t('cardTransactions.form.category')}</Label>
+              <CategorySelect
+                value={editForm.categoryId}
+                onChange={(value) => setEditForm({ ...editForm, categoryId: value })}
               />
             </div>
           </div>

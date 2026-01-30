@@ -4,6 +4,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { createCreditCardTransactionFn } from '../functions'
 import type { CreateCreditCardTransactionDTO } from '../types'
+import { CategorySelect } from '@/features/categories/components/CategorySelect'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { DatePicker } from '@/components/ui/date-picker'
@@ -26,6 +27,7 @@ export function AddCreditCardTransactionForm({ cardId }: AddCreditCardTransactio
     creditCardId: cardId,
     installments: 1,
     date: new Date(),
+    categoryId: null,
   })
 
   const mutation = useMutation({
@@ -51,6 +53,7 @@ export function AddCreditCardTransactionForm({ cardId }: AddCreditCardTransactio
         creditCardId: cardId,
         installments: formData.installments || 1,
         date: formData.date,
+        categoryId: formData.categoryId,
       })
     } finally {
       setLoading(false)
@@ -111,6 +114,14 @@ export function AddCreditCardTransactionForm({ cardId }: AddCreditCardTransactio
               onDateChange={(date) => setFormData({ ...formData, date: date || new Date() })}
               placeholder={t('cardTransactions.form.selectDate')}
               locale={language === 'pt' ? 'pt' : 'en'}
+            />
+          </div>
+
+          <div className='space-y-2'>
+            <Label>{t('cardTransactions.form.category')}</Label>
+            <CategorySelect
+              value={formData.categoryId}
+              onChange={(value) => setFormData({ ...formData, categoryId: value })}
             />
           </div>
 

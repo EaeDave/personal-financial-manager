@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { deleteTransactionFn, updateTransactionFn } from '../functions'
-import type { Transaction, TransactionType, UpdateTransactionDTO } from '../types'
+import { deleteAccountFn, updateAccountFn } from '../functions'
+import type { Account, AccountType, UpdateAccountDTO } from '../types'
 import { Button } from '@/components/ui/button'
-import { DatePicker } from '@/components/ui/date-picker'
 import {
   Dialog,
   DialogContent,
@@ -18,42 +18,36 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { CategorySelect } from '@/features/categories/components/CategorySelect'
-import { useSettings } from '@/lib/settings-context'
 
-interface TransactionActionsProps {
-  transaction: Transaction
-  accountId: string
+interface AccountActionsProps {
+  account: Account
 }
 
-export function TransactionActions({ transaction, accountId }: TransactionActionsProps) {
+export function AccountActions({ account }: AccountActionsProps) {
   const { t } = useTranslation()
-  const { language } = useSettings()
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [editForm, setEditForm] = useState<UpdateTransactionDTO>({
-    id: transaction.id,
-    description: transaction.description,
-    amount: transaction.amount,
-    type: transaction.type,
-    date: new Date(transaction.date),
-    categoryId: transaction.categoryId,
+  const [editForm, setEditForm] = useState<UpdateAccountDTO>({
+    id: account.id,
+    name: account.name,
+    type: account.type,
+    balance: account.balance,
   })
 
   const deleteMutation = useMutation({
-    mutationFn: () => (deleteTransactionFn as any)({ data: { transactionId: transaction.id } }),
+    mutationFn: () => (deleteAccountFn as any)({ data: { accountId: account.id } }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions', accountId] })
       queryClient.invalidateQueries({ queryKey: ['accounts'] })
       setShowDeleteDialog(false)
+      navigate({ to: '/accounts' })
     },
   })
 
   const updateMutation = useMutation({
-    mutationFn: (data: UpdateTransactionDTO) => (updateTransactionFn as any)({ data }),
+    mutationFn: (data: UpdateAccountDTO) => (updateAccountFn as any)({ data }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions', accountId] })
       queryClient.invalidateQueries({ queryKey: ['accounts'] })
       setShowEditDialog(false)
     },
@@ -92,55 +86,37 @@ export function TransactionActions({ transaction, accountId }: TransactionAction
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('common.edit')}</DialogTitle>
-            <DialogDescription>{t('transactions.desc')}</DialogDescription>
+            <DialogDescription>{t('accounts.desc')}</DialogDescription>
           </DialogHeader>
           <div className='space-y-4 py-4'>
             <div className='space-y-2'>
-              <Label>{t('transactions.form.description')}</Label>
+              <Label>{t('accounts.form.name')}</Label>
+              <Input value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
+            </div>
+            <div className='space-y-2'>
+              <Label>{t('accounts.form.type')}</Label>
+              <Select
+                value={editForm.type}
+                onValueChange={(value) => setEditForm({ ...editForm, type: value as AccountType })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='checking'>{t('accounts.types.checking')}</SelectItem>
+                  <SelectItem value='savings'>{t('accounts.types.savings')}</SelectItem>
+                  <SelectItem value='investment'>{t('accounts.types.investment')}</SelectItem>
+                  <SelectItem value='cash'>{t('accounts.types.cash')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className='space-y-2'>
+              <Label>{t('accounts.form.initialBalance')}</Label>
               <Input
-                value={editForm.description}
-                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-              />
-            </div>
-            <div className='grid grid-cols-2 gap-4'>
-              <div className='space-y-2'>
-                <Label>{t('transactions.form.amount')}</Label>
-                <Input
-                  type='number'
-                  step='0.01'
-                  value={editForm.amount}
-                  onChange={(e) => setEditForm({ ...editForm, amount: Number(e.target.value) })}
-                />
-              </div>
-              <div className='space-y-2'>
-                <Label>{t('transactions.form.type')}</Label>
-                <Select
-                  value={editForm.type}
-                  onValueChange={(value) => setEditForm({ ...editForm, type: value as TransactionType })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='EXPENSE'>{t('transactions.form.expense')}</SelectItem>
-                    <SelectItem value='INCOME'>{t('transactions.form.income')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className='space-y-2'>
-              <Label>{t('transactions.form.date')}</Label>
-              <DatePicker
-                date={editForm.date}
-                onDateChange={(date) => setEditForm({ ...editForm, date: date || new Date() })}
-                locale={language === 'pt' ? 'pt' : 'en'}
-              />
-            </div>
-            <div className='space-y-2'>
-              <Label>{t('transactions.form.category')}</Label>
-              <CategorySelect
-                value={editForm.categoryId}
-                onChange={(value) => setEditForm({ ...editForm, categoryId: value })}
+                type='number'
+                step='0.01'
+                value={editForm.balance}
+                onChange={(e) => setEditForm({ ...editForm, balance: Number(e.target.value) })}
               />
             </div>
           </div>

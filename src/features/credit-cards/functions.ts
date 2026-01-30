@@ -4,6 +4,7 @@ import type {
   CreateCreditCardTransactionDTO,
   CreditCard,
   CreditCardTransaction,
+  UpdateCreditCardDTO,
   UpdateCreditCardTransactionDTO,
 } from './types'
 import { prisma } from '@/lib/db'
@@ -45,6 +46,7 @@ export const getCreditCardByIdFn = createServerFn({ method: 'GET' }).handler(asy
     include: {
       transactions: {
         orderBy: { date: 'desc' },
+        include: { category: true },
       },
     },
   })
@@ -68,6 +70,7 @@ export const createCreditCardTransactionFn = createServerFn({ method: 'POST' }).
       date: payload.date ? new Date(payload.date) : new Date(),
       installments: payload.installments || 1,
       currentInstallment: 1,
+      categoryId: payload.categoryId,
     },
   })
 
@@ -80,6 +83,7 @@ export const getCreditCardTransactionsFn = createServerFn({ method: 'GET' }).han
   const transactions = await prisma.creditCardTransaction.findMany({
     where: { creditCardId: cardId },
     orderBy: { date: 'desc' },
+    include: { category: true },
   })
 
   return transactions as unknown as Array<CreditCardTransaction>
@@ -105,8 +109,35 @@ export const updateCreditCardTransactionFn = createServerFn({ method: 'POST' }).
       amount: payload.amount,
       date: payload.date ? new Date(payload.date) : undefined,
       installments: payload.installments,
+      categoryId: payload.categoryId,
     },
   })
 
   return transaction as unknown as CreditCardTransaction
+})
+
+export const updateCreditCardFn = createServerFn({ method: 'POST' }).handler(async (ctx: any) => {
+  const payload = ctx.data as UpdateCreditCardDTO
+
+  const card = await prisma.creditCard.update({
+    where: { id: payload.id },
+    data: {
+      name: payload.name,
+      limit: payload.limit,
+      closingDay: payload.closingDay,
+      dueDay: payload.dueDay,
+    },
+  })
+
+  return card as CreditCard
+})
+
+export const deleteCreditCardFn = createServerFn({ method: 'POST' }).handler(async (ctx: any) => {
+  const { cardId } = ctx.data as { cardId: string }
+
+  await prisma.creditCard.delete({
+    where: { id: cardId },
+  })
+
+  return { success: true }
 })

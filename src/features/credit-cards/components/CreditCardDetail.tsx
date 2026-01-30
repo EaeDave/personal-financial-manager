@@ -3,6 +3,7 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { Calendar, CreditCard as CardIcon, Plus, TrendingUp, Wallet } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { getCreditCardByIdFn } from '../functions'
+import { CreditCardActions } from './CreditCardActions'
 import { CreditCardTransactionActions } from './CreditCardTransactionActions'
 import type { CreditCardTransaction } from '../types'
 import { Button } from '@/components/ui/button'
@@ -55,10 +56,13 @@ export function CreditCardDetail({ cardId }: CreditCardDetailProps) {
               <CardTitle className='text-3xl'>{card.name}</CardTitle>
               <CardDescription>{t('cards.cardDetails')}</CardDescription>
             </div>
-            <Button type='button' onClick={handleAddPurchase}>
-              <Plus size={16} />
-              {t('cards.addPurchase')}
-            </Button>
+            <div className='flex items-center gap-2'>
+              <Button type='button' onClick={handleAddPurchase}>
+                <Plus size={16} />
+                {t('cards.addPurchase')}
+              </Button>
+              <CreditCardActions card={card} />
+            </div>
           </div>
         </CardHeader>
         <CardContent className='space-y-6'>
@@ -132,6 +136,7 @@ export function CreditCardDetail({ cardId }: CreditCardDetailProps) {
                       <div className='font-medium'>{transaction.description}</div>
                       <div className='text-sm text-muted-foreground'>
                         {new Date(transaction.date).toLocaleDateString()}
+                        {transaction.category && ` • ${transaction.category.name}`}
                         {transaction.installments > 1 && (
                           <span className='ml-2'>
                             ({transaction.currentInstallment}/{transaction.installments})

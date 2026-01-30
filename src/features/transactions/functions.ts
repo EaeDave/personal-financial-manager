@@ -14,6 +14,7 @@ export const createTransactionFn = createServerFn({ method: 'POST' }).handler(as
         type: payload.type,
         accountId: payload.accountId,
         date: payload.date ? new Date(payload.date) : new Date(),
+        categoryId: payload.categoryId,
       },
     })
 
@@ -38,6 +39,7 @@ export const getTransactionsByAccountFn = createServerFn({ method: 'GET' }).hand
   const movements = await prisma.financialMovement.findMany({
     where: { accountId },
     orderBy: { date: 'desc' },
+    include: { category: true },
   })
 
   return movements as unknown as Array<Transaction>
@@ -110,6 +112,7 @@ export const updateTransactionFn = createServerFn({ method: 'POST' }).handler(as
         amount: payload.amount,
         type: payload.type,
         date: payload.date ? new Date(payload.date) : undefined,
+        categoryId: payload.categoryId,
       },
     })
 

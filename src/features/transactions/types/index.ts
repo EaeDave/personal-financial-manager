@@ -6,6 +6,7 @@ export interface CreateTransactionDTO {
   accountId: string
   type: TransactionType
   date?: Date
+  categoryId?: string | null
 }
 
 export interface UpdateTransactionDTO {
@@ -14,6 +15,7 @@ export interface UpdateTransactionDTO {
   amount: number
   type: TransactionType
   date?: Date
+  categoryId?: string | null
 }
 
 export interface Transaction extends CreateTransactionDTO {
@@ -21,4 +23,6 @@ export interface Transaction extends CreateTransactionDTO {
   date: Date
   createdAt: Date
   updatedAt: Date
+  categoryId?: string | null
+  category?: { id: string; name: string; color: string | null } | null
 }

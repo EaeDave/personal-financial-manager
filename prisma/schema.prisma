@@ -39,12 +39,15 @@ model CreditCardTransaction {
   date               DateTime   @default(now())
   installments       Int        @default(1)
   currentInstallment Int        @default(1)
+  category           Category?  @relation(fields: [categoryId], references: [id])
+  categoryId         String?
   creditCardId       String
   creditCard         CreditCard @relation(fields: [creditCardId], references: [id], onDelete: Cascade)
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
 
   @@index([creditCardId])
+  @@index([categoryId])
   @@map("credit_card_transactions")
 }
 
@@ -68,10 +71,26 @@ model FinancialMovement {
   date        DateTime @default(now())
   accountId   String
   account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  category    Category? @relation(fields: [categoryId], references: [id])
+  categoryId  String?
   type        String // INCOME or EXPENSE
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([accountId])
+  @@index([categoryId])
   @@map("financial_movements")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  color     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  financialMovements    FinancialMovement[]
+  creditCardTransactions CreditCardTransaction[]
+
+  @@map("categories")
 }

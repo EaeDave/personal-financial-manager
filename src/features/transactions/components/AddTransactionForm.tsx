@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { getAccountsFn } from '@/features/accounts/functions'
+import { CategorySelect } from '@/features/categories/components/CategorySelect'
 import { useSettings } from '@/lib/settings-context'
 
 interface AddTransactionFormProps {
@@ -33,6 +34,7 @@ export function AddTransactionForm({ accountId }: AddTransactionFormProps) {
     type: 'EXPENSE',
     accountId: accountId || accounts[0]?.id || '',
     date: new Date(),
+    categoryId: null,
   })
 
   const mutation = useMutation({
@@ -62,6 +64,7 @@ export function AddTransactionForm({ accountId }: AddTransactionFormProps) {
         accountId: formData.accountId,
         type: formData.type,
         date: formData.date,
+        categoryId: formData.categoryId,
       })
     } finally {
       setLoading(false)
@@ -145,6 +148,14 @@ export function AddTransactionForm({ accountId }: AddTransactionFormProps) {
               onDateChange={(date) => setFormData({ ...formData, date: date || new Date() })}
               placeholder={t('transactions.form.selectDate')}
               locale={language === 'pt' ? 'pt' : 'en'}
+            />
+          </div>
+
+          <div className='space-y-2'>
+            <Label>{t('transactions.form.category')}</Label>
+            <CategorySelect
+              value={formData.categoryId}
+              onChange={(value) => setFormData({ ...formData, categoryId: value })}
             />
           </div>
 

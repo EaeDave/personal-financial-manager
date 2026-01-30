@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { ArrowUpIcon, Settings } from 'lucide-react'
+import { ArrowUpIcon, Settings, Tag } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -41,6 +41,17 @@ function App() {
             <CardHeader>
               <CardTitle>{t('dashboard.addBill')}</CardTitle>
               <CardDescription>{t('dashboard.addBillDesc')}</CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
+        <Link to='/categories' className='block hover:no-underline'>
+          <Card className='h-full hover:bg-slate-50 transition-colors'>
+            <CardHeader>
+              <CardTitle className='flex items-center gap-2'>
+                <Tag size={16} />
+                {t('dashboard.manageCategories')}
+              </CardTitle>
+              <CardDescription>{t('dashboard.manageCategoriesDesc')}</CardDescription>
             </CardHeader>
           </Card>
         </Link>

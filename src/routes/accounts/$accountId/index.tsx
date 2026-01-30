@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getAccountsFn } from '@/features/accounts/functions'
 import { getTransactionsByAccountFn } from '@/features/transactions/functions'
+import { AccountActions } from '@/features/accounts/components/AccountActions'
 import { TransactionActions } from '@/features/transactions/components/TransactionActions'
 import { BackButton } from '@/components/ui/back-button'
 import { Button } from '@/components/ui/button'
@@ -53,12 +54,15 @@ function AccountDetails({ accountId }: { accountId: string }) {
             <CardDescription>{account.type.toUpperCase()}</CardDescription>
             <CardTitle className='text-3xl font-bold'>{account.name}</CardTitle>
           </div>
-          <Button asChild>
-            <Link to='/accounts/$accountId/transactions/new' params={{ accountId }}>
-              <Plus size={16} />
-              {t('dashboard.newTransaction')}
-            </Link>
-          </Button>
+          <div className='flex items-center gap-2'>
+            <Button asChild>
+              <Link to='/accounts/$accountId/transactions/new' params={{ accountId }}>
+                <Plus size={16} />
+                {t('dashboard.newTransaction')}
+              </Link>
+            </Button>
+            <AccountActions account={account} />
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -120,7 +124,10 @@ function TransactionHistory({ accountId }: { accountId: string }) {
                 </div>
                 <div>
                   <div className='font-semibold'>{tx.description}</div>
-                  <div className='text-sm text-muted-foreground'>{formatDate(tx.date)}</div>
+                  <div className='text-sm text-muted-foreground'>
+                    {formatDate(tx.date)}
+                    {tx.category && ` • ${tx.category.name}`}
+                  </div>
                 </div>
               </div>
               <div className='flex items-center gap-2'>
