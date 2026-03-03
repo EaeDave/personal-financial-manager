@@ -95,3 +95,17 @@ model Category {
 
   @@map("categories")
 }
+
+model User {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String   @unique
+  phone     String   // com DDD, ex: "11999998888"
+  birthDate DateTime
+  password  String   // hash bcrypt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}

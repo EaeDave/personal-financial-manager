@@ -5,6 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import '../lib/i18n' // Initialize i18n
 import { SettingsProvider } from '../lib/settings-context'
+import { AuthProvider } from '../lib/auth-context'
 import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
 
@@ -52,21 +53,23 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <QueryClientProvider client={queryClient}>
-          <SettingsProvider>
-            {children}
-            <ReactQueryDevtools buttonPosition='bottom-left' />
-            <TanStackDevtools
-              config={{
-                position: 'bottom-right',
-              }}
-              plugins={[
-                {
-                  name: 'Tanstack Router',
-                  render: <TanStackRouterDevtoolsPanel />,
-                },
-              ]}
-            />
-          </SettingsProvider>
+          <AuthProvider>
+            <SettingsProvider>
+              {children}
+              <ReactQueryDevtools buttonPosition='bottom-left' />
+              <TanStackDevtools
+                config={{
+                  position: 'bottom-right',
+                }}
+                plugins={[
+                  {
+                    name: 'Tanstack Router',
+                    render: <TanStackRouterDevtoolsPanel />,
+                  },
+                ]}
+              />
+            </SettingsProvider>
+          </AuthProvider>
         </QueryClientProvider>
         <Scripts />
       </body>

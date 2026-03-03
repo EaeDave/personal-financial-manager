@@ -1,20 +1,49 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
-import { ArrowUpIcon, Settings, Tag } from 'lucide-react'
+import { Link, createFileRoute, redirect } from '@tanstack/react-router'
+import { ArrowUpIcon, LogOut, Settings, Tag } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { useAuth } from '@/lib/auth-context'
+import { getSessionFn } from '@/features/auth/functions'
 
-export const Route = createFileRoute('/')({ component: App })
+export const Route = createFileRoute('/')({
+  beforeLoad: async () => {
+    const session = await getSessionFn()
+    if (!session.success || !session.user) {
+      throw redirect({ to: '/login' })
+    }
+  },
+  component: App,
+})
 
 function App() {
   const { t } = useTranslation()
+  const { user, logout } = useAuth()
+
+  const handleLogout = async () => {
+    await logout()
+    window.location.href = '/login'
+  }
 
   return (
     <div className='p-8 max-w-4xl mx-auto'>
       <div className='flex items-center justify-between mb-6'>
-        <h1 className='text-3xl font-bold'>{t('app.title')}</h1>
-        <Link to='/settings'>
-          <Settings className='h-6 w-6 text-muted-foreground hover:text-foreground transition-colors' />
-        </Link>
+        <div>
+          <h1 className='text-3xl font-bold'>{t('app.title')}</h1>
+          {user && (
+            <p className='text-muted-foreground text-sm mt-1'>
+              {user.firstName} {user.lastName}
+            </p>
+          )}
+        </div>
+        <div className='flex items-center gap-2'>
+          <Link to='/settings'>
+            <Settings className='h-6 w-6 text-muted-foreground hover:text-foreground transition-colors' />
+          </Link>
+          <Button variant='ghost' size='icon' onClick={handleLogout} title={t('auth.logout')}>
+            <LogOut className='h-5 w-5 text-muted-foreground hover:text-foreground' />
+          </Button>
+        </div>
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>

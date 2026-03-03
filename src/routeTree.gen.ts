@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
@@ -23,6 +24,11 @@ import { Route as AccountsAccountIdIndexRouteImport } from './routes/accounts/$a
 import { Route as CardsCardIdTransactionsNewRouteImport } from './routes/cards/$cardId/transactions/new'
 import { Route as AccountsAccountIdTransactionsNewRouteImport } from './routes/accounts/$accountId/transactions/new'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CategoriesRoute = CategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
@@ -94,6 +100,7 @@ const AccountsAccountIdTransactionsNewRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/categories': typeof CategoriesRoute
+  '/login': typeof LoginRoute
   '/accounts/new': typeof AccountsNewRoute
   '/bills/new': typeof BillsNewRoute
   '/cards/new': typeof CardsNewRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/categories': typeof CategoriesRoute
+  '/login': typeof LoginRoute
   '/accounts/new': typeof AccountsNewRoute
   '/bills/new': typeof BillsNewRoute
   '/cards/new': typeof CardsNewRoute
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/categories': typeof CategoriesRoute
+  '/login': typeof LoginRoute
   '/accounts/new': typeof AccountsNewRoute
   '/bills/new': typeof BillsNewRoute
   '/cards/new': typeof CardsNewRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/categories'
+    | '/login'
     | '/accounts/new'
     | '/bills/new'
     | '/cards/new'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/categories'
+    | '/login'
     | '/accounts/new'
     | '/bills/new'
     | '/cards/new'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/categories'
+    | '/login'
     | '/accounts/new'
     | '/bills/new'
     | '/cards/new'
@@ -188,6 +200,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CategoriesRoute: typeof CategoriesRoute
+  LoginRoute: typeof LoginRoute
   AccountsNewRoute: typeof AccountsNewRoute
   BillsNewRoute: typeof BillsNewRoute
   CardsNewRoute: typeof CardsNewRoute
@@ -203,6 +216,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/categories': {
       id: '/categories'
       path: '/categories'
@@ -300,6 +320,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CategoriesRoute: CategoriesRoute,
+  LoginRoute: LoginRoute,
   AccountsNewRoute: AccountsNewRoute,
   BillsNewRoute: BillsNewRoute,
   CardsNewRoute: CardsNewRoute,

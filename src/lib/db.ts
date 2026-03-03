@@ -1,8 +1,8 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 
 // Load .env file manually if DATABASE_URL is not set
 // This ensures compatibility with Bun, Vite, and Nitro
