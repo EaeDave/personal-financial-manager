@@ -12,11 +12,14 @@ model Account {
   name         String
   type         String // checking, savings, investment, cash
   balance      Float
+  userId       String
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @updatedAt
   transactions FinancialMovement[]
 
   @@index([type])
+  @@index([userId])
   @@map("accounts")
 }
 
@@ -26,10 +29,13 @@ model CreditCard {
   limit        Float
   closingDay   Int
   dueDay       Int
+  userId       String
+  user         User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt    DateTime                @default(now())
   updatedAt    DateTime                @updatedAt
   transactions CreditCardTransaction[]
 
+  @@index([userId])
   @@map("credit_cards")
 }
 
@@ -58,54 +64,69 @@ model Bill {
   amount      Float
   dueDate     String
   frequency   String // once, weekly, monthly, yearly
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([frequency])
+  @@index([userId])
   @@map("bills")
 }
 
 model FinancialMovement {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   description String
   amount      Float
-  date        DateTime @default(now())
+  date        DateTime  @default(now())
   accountId   String
-  account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  account     Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
   category    Category? @relation(fields: [categoryId], references: [id])
   categoryId  String?
   type        String // INCOME or EXPENSE
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([accountId])
   @@index([categoryId])
+  @@index([userId])
   @@map("financial_movements")
 }
 
 model Category {
   id        String   @id @default(cuid())
-  name      String   @unique
+  name      String
   color     String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  financialMovements    FinancialMovement[]
+  financialMovements     FinancialMovement[]
   creditCardTransactions CreditCardTransaction[]
 
+  @@unique([userId, name])
+  @@index([userId])
   @@map("categories")
 }
 
 model User {
-  id        String   @id @default(cuid())
-  firstName String
-  lastName  String
-  email     String   @unique
-  phone     String   // com DDD, ex: "11999998888"
-  birthDate DateTime
-  password  String   // hash bcrypt
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                 String              @id @default(cuid())
+  firstName          String
+  lastName           String
+  email              String              @unique
+  phone              String // com DDD, ex: "11999998888"
+  birthDate          DateTime
+  password           String // hash bcrypt
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  accounts           Account[]
+  creditCards        CreditCard[]
+  bills              Bill[]
+  financialMovements FinancialMovement[]
+  categories         Category[]
 
   @@map("users")
 }

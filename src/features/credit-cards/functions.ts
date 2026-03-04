@@ -8,8 +8,10 @@ import type {
   UpdateCreditCardTransactionDTO,
 } from './types'
 import { prisma } from '@/lib/db'
+import { requireAuth } from '@/lib/auth'
 
 export const createCreditCardFn = createServerFn({ method: 'POST' }).handler(async ({ data }: { data: any }) => {
+  const userId = await requireAuth()
   const payload = data as CreateCreditCardDTO
 
   const card = await prisma.creditCard.create({
@@ -18,6 +20,7 @@ export const createCreditCardFn = createServerFn({ method: 'POST' }).handler(asy
       limit: payload.limit,
       closingDay: payload.closingDay,
       dueDay: payload.dueDay,
+      userId,
     },
   })
 
@@ -25,7 +28,10 @@ export const createCreditCardFn = createServerFn({ method: 'POST' }).handler(asy
 })
 
 export const getCreditCardsFn = createServerFn({ method: 'GET' }).handler(async () => {
+  const userId = await requireAuth()
+
   const cards = await prisma.creditCard.findMany({
+    where: { userId },
     orderBy: { createdAt: 'desc' },
     include: {
       transactions: true,
@@ -39,10 +45,11 @@ export const getCreditCardsFn = createServerFn({ method: 'GET' }).handler(async 
 })
 
 export const getCreditCardByIdFn = createServerFn({ method: 'GET' }).handler(async (ctx: any) => {
+  const userId = await requireAuth()
   const { cardId } = ctx.data as { cardId: string }
 
   const card = await prisma.creditCard.findUnique({
-    where: { id: cardId },
+    where: { id: cardId, userId },
     include: {
       transactions: {
         orderBy: { date: 'desc' },
@@ -117,10 +124,11 @@ export const updateCreditCardTransactionFn = createServerFn({ method: 'POST' }).
 })
 
 export const updateCreditCardFn = createServerFn({ method: 'POST' }).handler(async (ctx: any) => {
+  const userId = await requireAuth()
   const payload = ctx.data as UpdateCreditCardDTO
 
   const card = await prisma.creditCard.update({
-    where: { id: payload.id },
+    where: { id: payload.id, userId },
     data: {
       name: payload.name,
       limit: payload.limit,
@@ -133,10 +141,11 @@ export const updateCreditCardFn = createServerFn({ method: 'POST' }).handler(asy
 })
 
 export const deleteCreditCardFn = createServerFn({ method: 'POST' }).handler(async (ctx: any) => {
+  const userId = await requireAuth()
   const { cardId } = ctx.data as { cardId: string }
 
   await prisma.creditCard.delete({
-    where: { id: cardId },
+    where: { id: cardId, userId },
   })
 
   return { success: true }

@@ -1,8 +1,10 @@
 import { createServerFn } from '@tanstack/react-start'
 import type { Bill, CreateBillDTO } from './types'
 import { prisma } from '@/lib/db'
+import { requireAuth } from '@/lib/auth'
 
 export const createBillFn = createServerFn({ method: 'POST' }).handler(async (ctx: any) => {
+  const userId = await requireAuth()
   const payload = ctx.data as CreateBillDTO
 
   const bill = await prisma.bill.create({
@@ -11,6 +13,7 @@ export const createBillFn = createServerFn({ method: 'POST' }).handler(async (ct
       amount: payload.amount,
       dueDate: payload.dueDate,
       frequency: payload.frequency,
+      userId,
     },
   })
 
@@ -18,7 +21,10 @@ export const createBillFn = createServerFn({ method: 'POST' }).handler(async (ct
 })
 
 export const getBillsFn = createServerFn({ method: 'GET' }).handler(async () => {
+  const userId = await requireAuth()
+
   const bills = await prisma.bill.findMany({
+    where: { userId },
     orderBy: { createdAt: 'desc' },
   })
 

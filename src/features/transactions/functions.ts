@@ -1,8 +1,10 @@
 import { createServerFn } from '@tanstack/react-start'
 import type { CreateTransactionDTO, Transaction, UpdateTransactionDTO } from './types'
 import { prisma } from '@/lib/db'
+import { requireAuth } from '@/lib/auth'
 
 export const createTransactionFn = createServerFn({ method: 'POST' }).handler(async (ctx: any) => {
+  const userId = await requireAuth()
   const payload = ctx.data as CreateTransactionDTO
 
   return await prisma.$transaction(async (tx) => {
@@ -15,6 +17,7 @@ export const createTransactionFn = createServerFn({ method: 'POST' }).handler(as
         accountId: payload.accountId,
         date: payload.date ? new Date(payload.date) : new Date(),
         categoryId: payload.categoryId,
+        userId,
       },
     })
 
@@ -22,7 +25,7 @@ export const createTransactionFn = createServerFn({ method: 'POST' }).handler(as
     const balanceChange = payload.type === 'INCOME' ? payload.amount : -payload.amount
 
     await tx.account.update({
-      where: { id: payload.accountId },
+      where: { id: payload.accountId, userId },
       data: {
         balance: {
           increment: balanceChange,
@@ -35,9 +38,11 @@ export const createTransactionFn = createServerFn({ method: 'POST' }).handler(as
 })
 
 export const getTransactionsByAccountFn = createServerFn({ method: 'GET' }).handler(async (ctx: any) => {
+  const userId = await requireAuth()
   const { accountId } = ctx.data as { accountId: string }
+
   const movements = await prisma.financialMovement.findMany({
-    where: { accountId },
+    where: { accountId, userId },
     orderBy: { date: 'desc' },
     include: { category: true },
   })
@@ -46,12 +51,13 @@ export const getTransactionsByAccountFn = createServerFn({ method: 'GET' }).hand
 })
 
 export const deleteTransactionFn = createServerFn({ method: 'POST' }).handler(async (ctx: any) => {
+  const userId = await requireAuth()
   const { transactionId } = ctx.data as { transactionId: string }
 
   return await prisma.$transaction(async (tx) => {
     // 1. Get the transaction to know the amount and type
     const transaction = await tx.financialMovement.findUnique({
-      where: { id: transactionId },
+      where: { id: transactionId, userId },
     })
 
     if (!transaction) {
@@ -62,7 +68,7 @@ export const deleteTransactionFn = createServerFn({ method: 'POST' }).handler(as
     const balanceChange = transaction.type === 'INCOME' ? -transaction.amount : transaction.amount
 
     await tx.account.update({
-      where: { id: transaction.accountId },
+      where: { id: transaction.accountId, userId },
       data: {
         balance: {
           increment: balanceChange,
@@ -80,12 +86,13 @@ export const deleteTransactionFn = createServerFn({ method: 'POST' }).handler(as
 })
 
 export const updateTransactionFn = createServerFn({ method: 'POST' }).handler(async (ctx: any) => {
+  const userId = await requireAuth()
   const payload = ctx.data as UpdateTransactionDTO
 
   return await prisma.$transaction(async (tx) => {
-    // 1. Get the old transaction
+    // 1. Get the old transaction (scoped to userId)
     const oldTransaction = await tx.financialMovement.findUnique({
-      where: { id: payload.id },
+      where: { id: payload.id, userId },
     })
 
     if (!oldTransaction) {
@@ -96,7 +103,7 @@ export const updateTransactionFn = createServerFn({ method: 'POST' }).handler(as
     const oldBalanceChange = oldTransaction.type === 'INCOME' ? -oldTransaction.amount : oldTransaction.amount
 
     await tx.account.update({
-      where: { id: oldTransaction.accountId },
+      where: { id: oldTransaction.accountId, userId },
       data: {
         balance: {
           increment: oldBalanceChange,
@@ -120,7 +127,7 @@ export const updateTransactionFn = createServerFn({ method: 'POST' }).handler(as
     const newBalanceChange = payload.type === 'INCOME' ? payload.amount : -payload.amount
 
     await tx.account.update({
-      where: { id: oldTransaction.accountId },
+      where: { id: oldTransaction.accountId, userId },
       data: {
         balance: {
           increment: newBalanceChange,
