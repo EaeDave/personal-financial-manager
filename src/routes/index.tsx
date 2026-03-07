@@ -1,5 +1,5 @@
 import { Link, createFileRoute, redirect } from '@tanstack/react-router'
-import { ArrowUpIcon, LogOut, Settings, Tag } from 'lucide-react'
+import { ArrowUpIcon, LogOut, Repeat, Settings, Tag } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -65,14 +65,6 @@ function App() {
           </Card>
         </Link>
 
-        <Link to='/bills/new' className='block hover:no-underline'>
-          <Card className='h-full hover:bg-slate-50 transition-colors border-dashed border-2'>
-            <CardHeader>
-              <CardTitle>{t('dashboard.addBill')}</CardTitle>
-              <CardDescription>{t('dashboard.addBillDesc')}</CardDescription>
-            </CardHeader>
-          </Card>
-        </Link>
         <Link to='/categories' className='block hover:no-underline'>
           <Card className='h-full hover:bg-slate-50 transition-colors'>
             <CardHeader>
@@ -100,6 +92,20 @@ function App() {
                   <CardDescription className='text-primary-foreground/80'>
                     {t('dashboard.newTransactionDesc')}
                   </CardDescription>
+                </div>
+              </CardHeader>
+            </Card>
+          </Link>
+
+          <Link to='/bills/new' className='block hover:no-underline'>
+            <Card className='hover:bg-slate-50 transition-colors border-2 border-dashed'>
+              <CardHeader className='flex flex-row items-center space-x-4'>
+                <div className='bg-primary/10 p-3 rounded-full'>
+                  <Repeat className='h-6 w-6 text-primary' />
+                </div>
+                <div>
+                  <CardTitle>{t('dashboard.addRecurringExpense')}</CardTitle>
+                  <CardDescription>{t('dashboard.addRecurringExpenseDesc')}</CardDescription>
                 </div>
               </CardHeader>
             </Card>
