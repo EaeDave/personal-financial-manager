@@ -6,6 +6,7 @@ WORKDIR /app
 # Install dependencies only when needed
 FROM base AS deps
 COPY package.json bun.lock ./
+COPY prisma ./prisma
 RUN bun install --frozen-lockfile
 
 # Rebuild the source code only when needed
@@ -28,6 +29,7 @@ ENV PORT=3000
 
 # Install production dependencies
 COPY package.json bun.lock ./
+COPY prisma ./prisma
 RUN bun install --frozen-lockfile --production
 
 # Generate Prisma Client for production
@@ -36,9 +38,6 @@ RUN bunx prisma generate
 
 # Copy built application
 COPY --from=builder /app/.output ./.output
-
-# Expose the port the app runs on
-EXPOSE 3000
 
 # Expose the port the app runs on
 EXPOSE 3000
