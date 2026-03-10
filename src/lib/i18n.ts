@@ -168,8 +168,6 @@ const resources = {
           email: 'Email',
           password: 'Password',
           confirmPassword: 'Confirm Password',
-          phone: 'Phone',
-          birthDate: 'Date of Birth',
         },
         placeholders: {
           firstName: 'John',
@@ -184,7 +182,6 @@ const resources = {
           invalid_credentials: 'Invalid email or password.',
           passwordMismatch: 'Passwords do not match.',
           passwordTooShort: 'Password must be at least 6 characters.',
-          invalidPhone: 'Please enter a valid phone number with DDD.',
           unexpected: 'An unexpected error occurred. Please try again.',
         },
       },
@@ -356,8 +353,6 @@ const resources = {
           email: 'E-mail',
           password: 'Senha',
           confirmPassword: 'Confirmar Senha',
-          phone: 'Telefone Celular',
-          birthDate: 'Data de Nascimento',
         },
         placeholders: {
           firstName: 'João',
@@ -372,7 +367,6 @@ const resources = {
           invalid_credentials: 'E-mail ou senha inválidos.',
           passwordMismatch: 'As senhas não conferem.',
           passwordTooShort: 'A senha deve ter pelo menos 6 caracteres.',
-          invalidPhone: 'Informe um número de telefone válido com DDD.',
           unexpected: 'Ocorreu um erro inesperado. Tente novamente.',
         },
       },

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, Calendar, Eye, EyeOff, Loader2, Lock, Mail, Phone, User } from 'lucide-react'
+import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -27,8 +27,6 @@ function LoginPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [birthDate, setBirthDate] = useState('')
 
   const resetForm = () => {
     setError(null)
@@ -37,24 +35,11 @@ function LoginPage() {
     setConfirmPassword('')
     setFirstName('')
     setLastName('')
-    setPhone('')
-    setBirthDate('')
   }
 
   const toggleMode = () => {
     setMode((prev) => (prev === 'login' ? 'register' : 'login'))
     resetForm()
-  }
-
-  const formatPhone = (value: string) => {
-    const digits = value.replace(/\D/g, '').slice(0, 11)
-    if (digits.length <= 2) return digits
-    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
-  }
-
-  const handlePhoneChange = (value: string) => {
-    setPhone(formatPhone(value))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,20 +61,11 @@ function LoginPage() {
           return
         }
 
-        const phoneDigits = phone.replace(/\D/g, '')
-        if (phoneDigits.length < 10) {
-          setError(t('auth.errors.invalidPhone'))
-          setIsLoading(false)
-          return
-        }
-
         const response = await registerFn({
           data: {
             firstName,
             lastName,
             email,
-            phone: phoneDigits,
-            birthDate,
             password,
           },
         })
@@ -174,39 +150,6 @@ function LoginPage() {
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         placeholder={t('auth.placeholders.lastName')}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* Birth Date */}
-                  <div className='space-y-2'>
-                    <Label htmlFor='birthDate'>{t('auth.fields.birthDate')}</Label>
-                    <div className='relative'>
-                      <Calendar className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
-                      <Input
-                        id='birthDate'
-                        type='date'
-                        value={birthDate}
-                        onChange={(e) => setBirthDate(e.target.value)}
-                        className='pl-9'
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* Phone */}
-                  <div className='space-y-2'>
-                    <Label htmlFor='phone'>{t('auth.fields.phone')}</Label>
-                    <div className='relative'>
-                      <Phone className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
-                      <Input
-                        id='phone'
-                        type='tel'
-                        value={phone}
-                        onChange={(e) => handlePhoneChange(e.target.value)}
-                        placeholder='(11) 99999-9999'
-                        className='pl-9'
                         required
                       />
                     </div>

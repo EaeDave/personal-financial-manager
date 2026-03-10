@@ -29,14 +29,7 @@ export const registerFn = createServerFn({ method: 'POST' }).handler(async ({ da
   const payload = data as RegisterDTO
 
   // Validate required fields
-  if (
-    !payload.firstName ||
-    !payload.lastName ||
-    !payload.email ||
-    !payload.phone ||
-    !payload.birthDate ||
-    !payload.password
-  ) {
+  if (!payload.firstName || !payload.lastName || !payload.email || !payload.password) {
     return { success: false, error: 'missing_fields' } as AuthResponse
   }
 
@@ -58,8 +51,6 @@ export const registerFn = createServerFn({ method: 'POST' }).handler(async ({ da
       firstName: payload.firstName.trim(),
       lastName: payload.lastName.trim(),
       email: payload.email.toLowerCase().trim(),
-      phone: payload.phone.replace(/\D/g, ''), // store only digits
-      birthDate: new Date(payload.birthDate),
       password: hashedPassword,
     },
   })
@@ -75,8 +66,6 @@ export const registerFn = createServerFn({ method: 'POST' }).handler(async ({ da
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      phone: user.phone,
-      birthDate: user.birthDate.toISOString(),
     },
   } as AuthResponse
 })
@@ -115,8 +104,6 @@ export const loginFn = createServerFn({ method: 'POST' }).handler(async ({ data 
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      phone: user.phone,
-      birthDate: user.birthDate.toISOString(),
     },
   } as AuthResponse
 })
@@ -143,8 +130,6 @@ export const getSessionFn = createServerFn({ method: 'GET' }).handler(async () =
         firstName: true,
         lastName: true,
         email: true,
-        phone: true,
-        birthDate: true,
       },
     })
 
@@ -155,10 +140,7 @@ export const getSessionFn = createServerFn({ method: 'GET' }).handler(async () =
 
     return {
       success: true,
-      user: {
-        ...user,
-        birthDate: user.birthDate.toISOString(),
-      },
+      user,
     } as AuthResponse
   } catch {
     deleteCookie(COOKIE_NAME)
